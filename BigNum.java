@@ -23,8 +23,12 @@ public class BigNum
 
 	public static void main(String args[])
 	{
+		long start,end;
+		start = System.currentTimeMillis();
 		setDecimalFormat();
 		getUserInput();
+		end = System.currentTimeMillis();
+		System.out.println((end-start));
 	}
 
 	static void setDecimalFormat()
@@ -84,7 +88,7 @@ public class BigNum
 		}
 
 	}
-	
+
 	static boolean compareStrings(String s1, String s2)
 	{
 		if(s1.length() < s2.length())
@@ -106,32 +110,41 @@ public class BigNum
 			}
 			return true;
 		}
-		
+
 	}
-	
+
 	static String div(String dividend, String divisor)
 	{
 		String quotient="0";
-		LinkedList<Long> number1AsList = new LinkedList<Long>();
-		LinkedList<Long> number2AsList = new LinkedList<Long>();
-		LinkedList<Long> number3AsList = new LinkedList<Long>();
+		String iterator="2",prevIterator="1";
 		LinkedList<Long> one = new LinkedList<Long>();
 		one.add(1L);
-		while (compareStrings(dividend,divisor))
+		while(compareStrings(dividend,divisor))
 		{
-			number1AsList = stringNumberToLinkedList(dividend);
-			number2AsList = stringNumberToLinkedList(divisor);
-			number3AsList = stringNumberToLinkedList(quotient);
-			
-			dividend = sub(number1AsList,number2AsList);
-
-			quotient = add(number3AsList,one);
-		}
-		if(dividend.equals(divisor))
-		{
-			quotient = add(stringNumberToLinkedList(quotient),one);
+			while(compareStrings(dividend,mulInputAsString(divisor,iterator)))
+			{
+				prevIterator = iterator;
+				iterator = mulInputAsString(iterator,"2");		
+			}
+			if(mulInputAsString(divisor,iterator).equals(dividend))
+			{
+				quotient=add(stringNumberToLinkedList(quotient),stringNumberToLinkedList(iterator));
+				break;
+			}
+			quotient=add(stringNumberToLinkedList(quotient),stringNumberToLinkedList(prevIterator));
+			dividend = sub(stringNumberToLinkedList(dividend),stringNumberToLinkedList(mulInputAsString(prevIterator,divisor)));
+			iterator="2";
+			prevIterator="1";
 		}
 		return quotient;
+	}
+
+	static String mod(String dividend, String divisor)
+	{
+		String quotient="0";
+		quotient = div(dividend, divisor);
+		return(sub(stringNumberToLinkedList(dividend),stringNumberToLinkedList(mulInputAsString(quotient,divisor))));
+
 	}
 
 	static String exp(LinkedList<Long> number1AsList, int n)
@@ -327,7 +340,7 @@ public class BigNum
 		return output;
 
 	}
-	
+
 	static String sqrt(String number)
 	{
 		int minSize = (int) Math.floor((number.length() + 1 )/2);
@@ -336,7 +349,7 @@ public class BigNum
 		{
 			test.append(0);
 		}
-		
+
 		String sqr="";
 		int index;
 		for(int i=0;i<test.length();i++)
@@ -608,6 +621,24 @@ public class BigNum
 				}
 			}		
 		}
+		if(operator.equals("%"))
+		{
+			if( !(isValue1Negative || isValue2Negative) ) //a/b = a/b
+			{
+				return(mod(value1,value2));
+			}
+			else
+			{
+				if( (isValue1Negative && isValue2Negative) ) //(-a) / (-b) = (a/b)
+				{
+					return(mod(value1,value2));
+				}
+				else
+				{
+					return("-" + mod(value1,value2));
+				}
+			}		
+		}
 		if(operator.equals("^"))
 		{
 			memoizationTable = new HashMap<Integer,String>();
@@ -675,6 +706,7 @@ public class BigNum
 		precedenceRules.put("/", 2);
 		precedenceRules.put("^", 3);
 		precedenceRules.put("r", 3);
+		precedenceRules.put("%", 3);
 		precedenceRules.put("(", 0);
 		precedenceRules.put(")", 0);
 		String currentToken;
@@ -730,7 +762,7 @@ public class BigNum
 								String value2    = operandStack.pop();
 								String value1    = operandStack.pop();
 								currentOutput    = performOperation(value1, value2, previousOperator);
-								
+
 								if(currentOutput !=null)
 								{
 									operandStack.push(currentOutput);
@@ -739,7 +771,7 @@ public class BigNum
 								{
 									break;
 								}
-							
+
 							}
 						}
 					}
@@ -764,7 +796,7 @@ public class BigNum
 		}
 		catch(Exception e)
 		{
-			p.println("Syntax error / Negative numbers not supported");
+			p.println("Syntax error");
 		}
 	}
 
@@ -786,7 +818,7 @@ public class BigNum
 
 		return ll;
 	}
-	
+
 	static LinkedList<Long> stringBufferNumberToLinkedList(StringBuffer stringNumber)
 	{ 
 		LinkedList<Long> ll = new LinkedList<Long>();
