@@ -7,7 +7,6 @@ input.txt    - input file - There should be a space between each operand and ope
 run.sh       - This script executes the code and stores the output in output.txt file. Then it executes
                unix "bc" utility and stores its output in outputBc.txt. Finally it compares both the 
                output files using "diff" command.
-
 Note:
-Division is done by repeated subtraction. It is very slow.
-Will fix this in the next release.
+For square root this project uses "number r 2" format. BC tool uses sqrt(number)
+
