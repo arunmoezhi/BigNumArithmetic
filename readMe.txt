@@ -8,5 +8,5 @@ run.sh       - This script executes the code and stores the output in output.txt
                unix "bc" utility and stores its output in outputBc.txt. Finally it compares both the 
                output files using "diff" command.
 Note:
-For square root this project uses "number r 2" format. BC tool uses sqrt(number)
+For square root this project uses "number r 2" format. BC tool uses sqrt(number) 
 
